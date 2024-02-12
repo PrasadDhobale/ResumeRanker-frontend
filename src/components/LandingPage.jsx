@@ -29,7 +29,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="landing-page">
+    <div className="landing-page">      
       <header id='home' className="header">
         <Container>
           <Row>
