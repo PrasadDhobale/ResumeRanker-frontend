@@ -11,8 +11,9 @@ const MyVacancies = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
+  const [loading, setLoading] = useState(false); // Added loading state
   const recruiterDetails = JSON.parse(localStorage.getItem('recruiter'));
+
   useEffect(() => {
     // Fetch all jobs using Axios
     const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'; 
@@ -41,10 +42,30 @@ const MyVacancies = () => {
     console.log('Edit Job:', jobId);
   };
 
-  const handleDelete = (jobId) => {
-    // Implement logic to delete job
-    console.log('Delete Job:', jobId);
+  const handleDelete = async (jobId) => {
+    try {
+      setLoading(true); // Set loading to true before making the request
+  
+      const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'; // Change this to your actual baseURL;
+      const response = await axios.post(`${baseURL}/recruiter/job/delete/${recruiterDetails.id}/${jobId}/`);
+  
+      console.log(response);
+  
+      if (response.status === 204) {
+        alert('Job deleted successfully');
+        // Update the job list after successful deletion
+        setJobs(jobs.filter(job => job.job_id !== jobId));
+      } else {
+        alert('Failed to delete job');
+      }
+    } catch (error) {
+      // Handle error
+      alert(`Error deleting job: ${error.response ? error.response.data.error : error.message}`);
+    } finally {
+      setLoading(false); // Set loading to false after request completion
+    }
   };
+  
 
   const applyURL = 'http://localhost:3000/apply';
   const copyUrlToClipboard = () => {
@@ -65,98 +86,102 @@ const MyVacancies = () => {
   return (
     <div>
       <h1>Vacancies</h1>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr className='bg-success'>
-            <th>Sr.</th>
-            <th>Job ID</th>
-            <th>Job Title</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {jobs.map((job, index) => (
-            <tr key={job.job_id}>
-              <td>{index + 1}</td>
-              <td>{job.job_id}</td>
-              <td>{job.title}</td>
-              <td>
-                <Button variant="primary" onClick={() => handleView(job.job_id)}>
-                  <VisibilityIcon />
-                </Button>{' '}
-                <Button variant="success" onClick={() => handleEdit(job.job_id)}>
-                  <EditIcon />
-                </Button>{' '}
-                <Button variant="danger" onClick={() => handleDelete(job.job_id)}>
-                  <DeleteIcon />
-                </Button>
-              </td>
+      {loading && <div className="loader">Loading...</div>}
+      {jobs.length > 0 ? (
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className='bg-success'>
+              <th>Sr.</th>
+              <th>Job ID</th>
+              <th>Job Title</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {jobs.map((job, index) => (
+              <tr key={job.job_id}>
+                <td>{index + 1}</td>
+                <td>{job.job_id}</td>
+                <td>{job.title}</td>
+                <td>
+                  <Button variant="primary" onClick={() => handleView(job.job_id)}>
+                    <VisibilityIcon />
+                  </Button>{' '}
+                  <Button variant="success" onClick={() => handleEdit(job.job_id)}>
+                    <EditIcon />
+                  </Button>{' '}
+                  <Button variant="danger" onClick={() => handleDelete(job.job_id)}>
+                    <DeleteIcon />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <p>No jobs Available Currently.</p>
+      )}
 
       {/* Modal for displaying job details */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
-  <Modal.Header closeButton>
-    <Modal.Title>Job Details</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    {selectedJob && (
+      <Modal.Header closeButton>
+        <Modal.Title>Job Details</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {selectedJob && (
 
-      <Table striped bordered hover responsive>
-        <tbody>
-        <tr>
-            <td>Application Link:</td>
-            <td className='text-primary' onClick={copyUrlToClipboard}>
-              {`${applyURL}/${selectedJob.job_id}`}
-              <IconButton aria-label="copy">
-                <ContentCopy>Copy URL</ContentCopy>
-              </IconButton>
-            </td>
-          </tr>
-          <tr>
-            <td>Job ID:</td>
-            <td>{selectedJob.job_id}</td>
-          </tr>
-          <tr>
-            <td>Title:</td>
-            <td>{selectedJob.title}</td>
-          </tr>
-          <tr>
-            <td>Description:</td>
-            <td>{selectedJob.description}</td>
-          </tr>
-          <tr>
-            <td>Skills:</td>
-            <td>{selectedJob.skills}</td>
-          </tr>
-          <tr>
-            <td>Experience:</td>
-            <td>{selectedJob.experience}</td>
-          </tr>
-          <tr>
-            <td>Openings:</td>
-            <td>{selectedJob.no_of_openings}</td>
-          </tr>
-          <tr>
-            <td>Deadline:</td>
-            <td>{selectedJob.deadline}</td>
-          </tr>
-        </tbody>
-      </Table>
-    )}
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="success" onClick={handleEdit}>
-      Edit
-    </Button>
-    <Button variant="secondary" onClick={handleCloseModal}>
-      Close
-    </Button>
-  </Modal.Footer>
-</Modal>
-
+          <Table striped bordered hover responsive>
+            <tbody>
+            <tr>
+                <td>Application Link:</td>
+                <td className='text-primary' onClick={copyUrlToClipboard}>
+                  {`${applyURL}/${selectedJob.job_id}`}
+                  <IconButton aria-label="copy">
+                    <ContentCopy>Copy URL</ContentCopy>
+                  </IconButton>
+                </td>
+              </tr>
+              <tr>
+                <td>Job ID:</td>
+                <td>{selectedJob.job_id}</td>
+              </tr>
+              <tr>
+                <td>Title:</td>
+                <td>{selectedJob.title}</td>
+              </tr>
+              <tr>
+                <td>Description:</td>
+                <td>{selectedJob.description}</td>
+              </tr>
+              <tr>
+                <td>Skills:</td>
+                <td>{selectedJob.skills}</td>
+              </tr>
+              <tr>
+                <td>Experience:</td>
+                <td>{selectedJob.experience}</td>
+              </tr>
+              <tr>
+                <td>Openings:</td>
+                <td>{selectedJob.no_of_openings}</td>
+              </tr>
+              <tr>
+                <td>Deadline:</td>
+                <td>{selectedJob.deadline}</td>
+              </tr>
+            </tbody>
+          </Table>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="success" onClick={handleEdit}>
+          Edit
+        </Button>
+        <Button variant="secondary" onClick={handleCloseModal}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
     </div>
   );
 };

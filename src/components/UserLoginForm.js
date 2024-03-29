@@ -124,7 +124,7 @@ const UserLoginForm = ({ onClose }) => {
           <button type="submit" className={`form-button ${isLogin ? 'login-button' : 'register-button'}`}>
             {isLogin ? 'Login' : 'Register'}
           </button>
-          {loading && <div className="loader">Loading...</div>} {/* Display loader when loading is true */}
+          {loading && <div className="loader">Loading...</div>}
         </form>
         <p className="form-toggle">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}

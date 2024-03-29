@@ -67,7 +67,7 @@ const RecruiterLoginForm = () => {
         const response = await axios.post(`${baseURL}/recruiter/login/`, params);
     
         if(response.data.message === 'Login successful'){
-          alert("Login Successful");
+          alert("Login Successful");          
           localStorage.setItem('recruiter', JSON.stringify(response.data.recruiter));
           
           toggleForm();
@@ -134,7 +134,7 @@ const RecruiterLoginForm = () => {
             {isLogin ? 'Login' : 'Register'}
           </button>
           
-          {loading && <div className="loader">Loading...</div>} {/* Display loader when loading is true */}
+          {loading && <div className="loader">Loading...</div>}
         </form>
         <p className="form-toggle">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}

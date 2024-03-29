@@ -7,7 +7,7 @@ export default class RecruiterDashboard extends Component {
   document.title = "Resume Ranker | Recruiter Dashboard";
     return (
     <Container className='shadow pt-4 mt-4 justify-content-center '>
-        <h1>Welcome {JSON.parse(localStorage.getItem('recruiter')).first_name}</h1>
+        {/* <h1>Welcome {JSON.parse(localStorage.getItem('recruiter')).first_name}</h1> */}
         <MyVacancies />
     </Container>
     )

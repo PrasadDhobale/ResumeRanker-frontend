@@ -15,7 +15,7 @@ const UserNavbar = ({ onLogout }) => {
   return (
     <Navbar bg="dark" variant="dark" expand="md" expanded={expanded}>
       <Container>
-        <Navbar.Brand as={Link} to="/recruiter/dashboard">
+        <Navbar.Brand as={Link} to="/user/dashboard">
           Dashboard
         </Navbar.Brand>
         <Navbar.Toggle onClick={handleToggle} />

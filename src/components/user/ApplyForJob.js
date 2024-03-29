@@ -122,7 +122,6 @@ const ApplyForJob = () => {
             <td>Deadline</td>
             <td>{getLocalTime(jobDetails.deadline)}</td>
           </tr>
-          {/* Add more details as needed */}
         </tbody>
       </Table>
 
