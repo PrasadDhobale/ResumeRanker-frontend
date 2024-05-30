@@ -27,9 +27,6 @@ const RecruiterNavbar = ({ onLogout }) => {
             <Nav.Link as={Link} to="/recruiter/jobs">
               Create Jobs
             </Nav.Link>
-            <Nav.Link as={Link} to="/recruiter/alljobs">
-              All Jobs
-            </Nav.Link>
             <NavDropdown title="More" id="basic-nav-dropdown">
               <NavDropdown.Item as={Link} to="/recruiter/settings">
                 Settings

@@ -4,15 +4,30 @@ import { Container, Form, Button, Alert, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const UploadResume = () => {
-  const [title, settitle] = useState('');
+  const [title, settitle] = useState('');  
   const [file, setFile] = useState(null);
   const [resume_base64, setresume_base64] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [resumes, setResumes] = useState([]);
+  const [selectedResume, setSelectedResume] = useState('');
 
 
   const handleTitleChange = (e) => {
     settitle(e.target.value);
+  };
+  const handleResumeSelect = (resumeData) => {
+    setSelectedResume(resumeData);
+  };
+  const handleDelete = async (resumeId) => {
+    try {
+      const baseURL = process.env.REACT_APP_baseURL || 'http://localhost:8000';
+      await axios.post(`${baseURL}/user/resume/delete/${resumeId}`);
+      const updatedResumes = resumes.filter((resume) => resume.resume_id !== resumeId);
+      setResumes(updatedResumes);
+      alert('Resume deleted successfully');
+    } catch (error) {
+      console.error('Error deleting resume:', error.message);
+    }
   };
 
   // Assume you have a valid user ID in localStorage
@@ -113,6 +128,17 @@ const UploadResume = () => {
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
         <Button type="submit" variant="primary">Submit</Button>
       </Form>
+      {selectedResume && (
+        <div className="mt-4">
+          <h3 onClick={ () => {setSelectedResume(false)}}>Resume Preview <span className='text-light bg-danger p-1 m-1' style={{cursor: 'pointer', borderRadius: "10%"}}>Close</span></h3>
+          <iframe 
+            title="Resume Preview"
+            src={`${selectedResume}`}
+            width="100%"
+            height="500px"
+          ></iframe>
+        </div>
+      )}
       
         {
             
@@ -131,9 +157,10 @@ const UploadResume = () => {
                     <tr key={resume.resume_id}>
                         <td>{resume.title}</td>
                         <td>
-                        {/* Add icons or buttons for actions, e.g., view, download, delete */}
-                        <Button variant="primary">View</Button>{' '}
-                        <Button variant="danger">Delete</Button>
+                        <Button onClick={() => {handleResumeSelect(resume.resume_base64)}} variant="primary">View</Button>{' '}
+                        <Button onClick={() => handleDelete(resume.resume_id)} variant="danger">
+                          Delete
+                        </Button>
                         </td>
                     </tr>
                     ))}

@@ -7,7 +7,7 @@ const ForgotPasswordForm = ({ onClose }) => {
 
   const [formData, setFormData] = useState({
     email: '',
-    userType: 'user', // Default value, can be 'user' or 'recruiter'
+    userType: 'user',
   });
 
   const location = useLocation();

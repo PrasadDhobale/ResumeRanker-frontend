@@ -116,6 +116,10 @@ const UserLoginForm = ({ onClose }) => {
                 <input type="email" placeholder='Enter email' name="email" value={formData.email} onChange={handleInputChange} required className="form-input" />
               </label>
               <label>
+                Password:
+                <input type="password" placeholder='Enter password' name="password" value={formData.password} onChange={handleInputChange} required className="form-input" />
+              </label>
+              <label>
                 Mobile Number:
                 <input type="tel" placeholder='Enter Mobile Number' name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} required className="form-input" />
               </label>

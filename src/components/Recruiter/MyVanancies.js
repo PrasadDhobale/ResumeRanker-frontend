@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ContentCopy } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const MyVacancies = () => {
   const [jobs, setJobs] = useState([]);
@@ -13,7 +14,7 @@ const MyVacancies = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false); // Added loading state
   const recruiterDetails = JSON.parse(localStorage.getItem('recruiter'));
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Fetch all jobs using Axios
     const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'; 
@@ -26,11 +27,41 @@ const MyVacancies = () => {
       });
   }, [recruiterDetails.id]);
 
+  useEffect(() => {
+    const fetchApplicationCount = async (jobId) => {
+      try {
+        const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000';
+        const response = await axios.post(`${baseURL}/recruiter/job/getapplicationcount/${recruiterDetails.id}/${jobId}/`);
+        updateApplicationCount(jobId, response.data.applicant_count);
+      } catch (error) {
+        console.error('Error fetching applicant count:', error);
+      }
+    };
+
+    // Fetch application count for each job
+    if (jobs.length > 0) {
+      jobs.forEach(job => {
+        if (typeof job.applicant_count === 'undefined') {
+          fetchApplicationCount(job.job_id);
+        }
+      });
+    }
+  }, [jobs, recruiterDetails.id]);
+
+  const updateApplicationCount = (jobId, count) => {
+    setJobs(prevJobs => prevJobs.map(job => job.job_id === jobId ? { ...job, applicant_count: count } : job));
+  };
+
   const handleView = (jobId) => {
     // Find the selected job from the jobs array
     const job = jobs.find(job => job.job_id === jobId);
     setSelectedJob(job);
     setShowModal(true);
+  };
+
+  const ViewApplicants = (jobId) => {
+    // Navigate to JobDetails page
+    navigate(`/recruiter/job-details/${jobId}`);
   };
 
   const handleCloseModal = () => {
@@ -41,6 +72,7 @@ const MyVacancies = () => {
     // Implement logic to edit job
     console.log('Edit Job:', jobId);
   };
+
 
   const handleDelete = async (jobId) => {
     try {
@@ -95,6 +127,7 @@ const MyVacancies = () => {
               <th>Job ID</th>
               <th>Job Title</th>
               <th>Action</th>
+              <th>Applicants</th>
             </tr>
           </thead>
           <tbody>
@@ -112,6 +145,11 @@ const MyVacancies = () => {
                   </Button>{' '}
                   <Button variant="danger" onClick={() => handleDelete(job.job_id)}>
                     <DeleteIcon />
+                  </Button>
+                </td>
+                <td>
+                  <Button className="btn btn-info rounded" variant="link" onClick={() => ViewApplicants(job.job_id)}>
+                    {job.applicant_count}
                   </Button>
                 </td>
               </tr>
