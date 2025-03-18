@@ -21,7 +21,7 @@ const UploadResume = () => {
   const handleDelete = async (resumeId) => {
     try {
       const baseURL = process.env.REACT_APP_baseURL || 'http://localhost:8000';
-      await axios.post(`${baseURL}/user/resume/delete/${resumeId}`);
+      await axios.post(`${baseURL}/user/resume/delete/${resumeId}/`);
       const updatedResumes = resumes.filter((resume) => resume.resume_id !== resumeId);
       setResumes(updatedResumes);
       alert('Resume deleted successfully');
